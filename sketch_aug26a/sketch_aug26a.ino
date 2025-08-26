@@ -50,11 +50,11 @@ void loop() {
   // Calculating the distance
   distance = duration * 0.034 / 2;
   
-  if(distance <= threshold) {
+  if(distance <= threshold && distance != 0) {
     digitalWrite(motPin, HIGH);
     Serial.print("Distance: ");
     Serial.println(distance);
-  } else {
+  } else if(distance > threshold && && distance != 0) {
     digitalWrite(motPin, LOW);
     Serial.print("Distance: ");
     Serial.println(distance);
