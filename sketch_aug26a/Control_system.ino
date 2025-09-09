@@ -1,9 +1,9 @@
 #include <WiFi.h>
 
-const char* ssid = "network_here"
-const char* password = "password_here"
+const char* ssid = "ESP32_G34";
+const char* password = "123456789";
 
-WifiServer server(80);
+WiFiServer Server(80);
 
 String header;
 
@@ -14,28 +14,33 @@ const long timeout = 2000;
 void setup() {
   Serial.begin(115200);
   pinMode(5,OUTPUT); //may not need
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, password);
-  Serial.print("Connecting to WiFi ..");
-  while (WiFi.status() != WL_CONNECTED) {
-    Serial.print('.');
-    delay(1000);
+  WiFi.mode(WIFI_AP_STA);
+  // WiFi.begin(ssid,password);
+  // while (WiFi.status() != WL_CONNECTED) {
+  //   Serial.print('.');
+  //   delay(1000);
+  // }
+  if (!WiFi.config(local_IP,gateway,subnet)) {
+    	Serial.println("STA failed to configure");
   }
+  WiFi.softAP(ssid, password);
+  Serial.print("Connecting to WiFi ..");
 
   Serial.println("IP Address");
-  Serial.println(WiFi.localIP());
-  server.begin();
+  Serial.println(WiFi.softAPIP());
+
+  Server.begin();
 }
 
 void loop() {
-  WiFiClient client = server.available();   // Listen for incoming clients
+  WiFiClient client = Server.available();   // Listen for incoming clients
 
   if (client) {                             // If a new client connects,
     currentTime = millis();
-    previousTime = currentTime;
+    prevTime = currentTime;
     Serial.println("New Client.");          // print a message out in the serial port
     String currentLine = "";                // make a String to hold incoming data from the client
-    while (client.connected() && currentTime - previousTime <= timeoutTime) {  // loop while the client's connected
+    while (client.connected() && currentTime - prevTime <= timeout) {  // loop while the client's connected
       currentTime = millis();
       if (client.available()) {             // if there's bytes to read from the client,
         char c = client.read();             // read a byte, then
@@ -52,24 +57,24 @@ void loop() {
             client.println("Connection: close");
             client.println();
             
-            // turns the GPIOs on and off - if pins not in use delete ( shows link on website)
-            if (header.indexOf("GET /26/on") >= 0) {
-              Serial.println("GPIO 26 on");
-              output26State = "on";
-              digitalWrite(output26, HIGH);
-            } else if (header.indexOf("GET /26/off") >= 0) {
-              Serial.println("GPIO 26 off");
-              output26State = "off";
-              digitalWrite(output26, LOW);
-            } else if (header.indexOf("GET /27/on") >= 0) {
-              Serial.println("GPIO 27 on");
-              output27State = "on";
-              digitalWrite(output27, HIGH);
-            } else if (header.indexOf("GET /27/off") >= 0) {
-              Serial.println("GPIO 27 off");
-              output27State = "off";
-              digitalWrite(output27, LOW);
-            }
+            // // turns the GPIOs on and off - if pins not in use delete ( shows link on website)
+            // if (header.indexOf("GET /26/on") >= 0) {
+            //   Serial.println("GPIO 26 on");
+            //   //output26State = "on";
+            //   digitalWrite(output26, HIGH);
+            // } else if (header.indexOf("GET /26/off") >= 0) {
+            //   Serial.println("GPIO 26 off");
+            //   output26State = "off";
+            //   digitalWrite(output26, LOW);
+            // } else if (header.indexOf("GET /27/on") >= 0) {
+            //   Serial.println("GPIO 27 on");
+            //   output27State = "on";
+            //   digitalWrite(output27, HIGH);
+            // } else if (header.indexOf("GET /27/off") >= 0) {
+            //   Serial.println("GPIO 27 off");
+            //   output27State = "off";
+            //   digitalWrite(output27, LOW);
+            // }
             
             // Display the HTML web page
             client.println("<!DOCTYPE html><html>");
@@ -85,24 +90,24 @@ void loop() {
             // Web Page Heading
             client.println("<body><h1>ESP32 Web Server</h1>");
             
-            // Display current state, and ON/OFF buttons for GPIO 26  
-            client.println("<p>GPIO 26 - State " + output26State + "</p>");
-            // If the output26State is off, it displays the ON button       
-            if (output26State=="off") {
-              client.println("<p><a href=\"/26/on\"><button class=\"button\">ON</button></a></p>");
-            } else {
-              client.println("<p><a href=\"/26/off\"><button class=\"button button2\">OFF</button></a></p>");
-            } 
+            // // Display current state, and ON/OFF buttons for GPIO 26  
+            // client.println("<p>GPIO 26 - State " + output26State + "</p>");
+            // // If the output26State is off, it displays the ON button       
+            // if (output26State=="off") {
+            //   client.println("<p><a href=\"/26/on\"><button class=\"button\">ON</button></a></p>");
+            // } else {
+            //   client.println("<p><a href=\"/26/off\"><button class=\"button button2\">OFF</button></a></p>");
+            // } 
                
             // Display current state, and ON/OFF buttons for GPIO 27  
-            client.println("<p>GPIO 27 - State " + output27State + "</p>");
-            // If the output27State is off, it displays the ON button       
-            if (output27State=="off") {
-              client.println("<p><a href=\"/27/on\"><button class=\"button\">ON</button></a></p>");
-            } else {
-              client.println("<p><a href=\"/27/off\"><button class=\"button button2\">OFF</button></a></p>");
-            }
-            client.println("</body></html>");
+            // client.println("<p>GPIO 27 - State " + output27State + "</p>");
+            // // If the output27State is off, it displays the ON button       
+            // if (output27State=="off") {
+            //   client.println("<p><a href=\"/27/on\"><button class=\"button\">ON</button></a></p>");
+            // } else {
+            //   client.println("<p><a href=\"/27/off\"><button class=\"button button2\">OFF</button></a></p>");
+            // }
+            // client.println("</body></html>");
             
             // The HTTP response ends with another blank line
             client.println();
