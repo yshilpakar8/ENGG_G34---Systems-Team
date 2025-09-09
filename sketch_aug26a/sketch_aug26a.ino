@@ -54,7 +54,7 @@ void loop() {
     digitalWrite(motPin, HIGH);
     Serial.print("Distance: ");
     Serial.println(distance);
-  } else if(distance > threshold && && distance != 0) {
+  } else if(distance > threshold && distance != 0) {
     digitalWrite(motPin, LOW);
     Serial.print("Distance: ");
     Serial.println(distance);
