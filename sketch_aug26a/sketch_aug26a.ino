@@ -5,6 +5,8 @@
 const int trigPin = 9;
 const int echoPin = 10;
 
+const int trigPin2 = 5;
+const int echoPin2 = 11;
 
 // h-bridge pins
 const int in1Pin = 13;
@@ -16,20 +18,28 @@ const int motPin = 11;
 const int out1Pin = 2;
 const int out2Pin = 4;
 
+const int motPin = 6;
 int state; // 1 = up 0 = down
 
 // defines variables
-long duration;
-int distance;
-int threshold = 50;
+long duration1;
+int distance1;
+
+long duration2;
+int distance2;
+
+int threshold = 150;
+
 
 
 void setup() {
   pinMode(motPin, OUTPUT);
   pinMode(forwardPin, OUTPUT);
   pinMode(backwardPin, OUTPUT);
-  pinMode(trigPin, OUTPUT); // Sets the trigPin as an Output
-  pinMode(echoPin, INPUT); // Sets the echoPin as an Input
+  pinMode(trigPin1, OUTPUT); // Sets the trigPin as an Output
+  pinMode(echoPin1, INPUT);
+   pinMode(trigPin2, OUTPUT); // Sets the trigPin as an Output
+  pinMode(echoPin2, INPUT);// Sets the echoPin as an Input
   Serial.begin(9600); // Starts the serial communication
   state = 0;
 }
