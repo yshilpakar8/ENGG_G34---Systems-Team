@@ -14,15 +14,15 @@ const long timeout = 2000;
 void setup() {
   Serial.begin(115200);
   pinMode(5,OUTPUT); //may not need
-  WiFi.mode(WIFI_AP_STA);
+  WiFi.mode(WIFI_AP);
   // WiFi.begin(ssid,password);
   // while (WiFi.status() != WL_CONNECTED) {
   //   Serial.print('.');
   //   delay(1000);
   // }
-  if (!WiFi.config(local_IP,gateway,subnet)) {
-    	Serial.println("STA failed to configure");
-  }
+  // if (!WiFi.config(local_IP,gateway,subnet)) {
+  //   	Serial.println("STA failed to configure");
+  // }
   WiFi.softAP(ssid, password);
   Serial.print("Connecting to WiFi ..");
 
