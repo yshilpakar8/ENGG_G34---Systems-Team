@@ -90,6 +90,29 @@ void loop() {
             // Web Page Heading
             client.println("<body><h1>ESP32 Web Server</h1>");
             
+            // divider
+            
+            client.println("<hr>");
+
+            // Subheading
+
+            client.println("<body><h2>Control system</h2>");
+            client.println("<body><h3>Boat traffic light #1 </h3>");
+
+            client.println("<style>.switch {position: relative; display: inline-block; width: 100px; height: 54px;}");
+            client.println(".slider {position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc;}");
+            client.println(".slider:before {position: absolute; content: ""; height: 46px; width: 46px; left: 4px; bottom: 4px; background-color: white;}");
+            client.println("input:checked + .slider {background-color: #2196F3;}");
+            client.println("input:checked + .slider:before {transform: translateX(46px);}</style>");
+            client.println("<label class="switch"> <input type="checkbox"> <span class="slider"></span></label>");
+            client.println("<body><h3>Boat traffic light #2 </h3>");
+            client.println("<label class="switch"> <input type="checkbox"> <span class="slider"></span></label>");
+            client.println("<body><h3>Car traffic light #2 </h3>");
+            client.println("<label class="switch"> <input type="checkbox"> <span class="slider"></span></label>");
+            client.println("<body><h3>Car traffic light #2 </h3>");
+            client.println("<label class="switch"> <input type="checkbox"> <span class="slider"></span></label>");
+
+            
             // // Display current state, and ON/OFF buttons for GPIO 26  
             // client.println("<p>GPIO 26 - State " + output26State + "</p>");
             // // If the output26State is off, it displays the ON button       
