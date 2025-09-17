@@ -32,19 +32,19 @@ void loop() {
   Serial.println(distance);
 
   if (distance > 0 && distance < boatThreshold) {
-    // 🚢 Boat approaching → Red
+    // Boat approaching → Red
     setTrafficLights(COLOR_RED);
     delay(5000);
 
-    // 🚦 Yellow (warning)
+    //  Yellow 
     //setTrafficLights(COLOR_YELLOW);
     //delay(2000);
 
-    // 🚦 Green → cars go
+    // Green 
     setTrafficLights(COLOR_GREEN);
 
   } else {
-    // 🚦 Normal condition = Green
+    // Normal condition = Green
     setTrafficLights(COLOR_GREEN);
   }
 
