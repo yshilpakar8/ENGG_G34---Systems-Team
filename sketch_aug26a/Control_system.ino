@@ -83,10 +83,17 @@ void loop() {
             // CSS to style the on/off buttons 
             // Feel free to change the background-color and font-size attributes to fit your preferences
             client.println("<style>html { font-family: Helvetica; display: inline-block; margin: 0px auto; text-align: center;}");
-            client.println(".button { background-color: #4CAF50; border: none; color: white; padding: 16px 40px;");
+            //client.println(".button { background-color: #4CAF50; border: none; color: white; padding: 16px 40px;");
             client.println("text-decoration: none; font-size: 30px; margin: 2px; cursor: pointer;}");
-            client.println(".button2 {background-color: #555555;}</style></head>");
-            
+            //client.println(".button2 {background-color: #555555;}</style></head>");
+
+            //slider design
+            client.println(".switch {position: relative; display: inline-block; width: 100px; height: 54px;}");
+            client.println(".slider {position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc;}");
+            client.println(".slider:before {position: absolute; content: "\"; height: 46px; width: 46px; left: 4px; bottom: 4px; background-color: white;}");
+            client.println("input:checked + .slider {background-color: #2196F3;}");
+            client.println("input:checked + .slider:before {transform: translateX(46px);}</style></head>");
+
             // Web Page Heading
             client.println("<body><h1>ESP32 Web Server</h1>");
             
@@ -94,9 +101,9 @@ void loop() {
             
             client.println("<hr>");
 
-            client.println("<h2 style = "text-align: center;"> Bridge status </h2>");
+            client.println("<h2> Bridge status </h2>");
             client.println("<section><hr><h4> The lights are currently </h4><h4> The Motor is currently </h4><h4> The bridge is currently </h4></hr></section>");
-            client.println("<section><hr><h2> Motor control </h2><label class="switch"><input type="checkbox"><span class="slider"></span></label></hr></section>");
+            client.println("<section><hr><h2> Motor control </h2><label class=\"switch\"><input type=\"checkbox\"><span class=\"slider\"></hr></section>");
             client.println("");
             client.println("");
             client.println("");
@@ -104,27 +111,20 @@ void loop() {
 
             // Subheading
 
-            client.println("<body><h2 style = "text-align: center;">Control system</h2>");
+            client.println("<body><h2>Control system</h2>");
             client.println("<body><h3>Boat traffic light #1 </h3>");
 
-            //slider design
-            client.println("<style>.switch {position: relative; display: inline-block; width: 100px; height: 54px;}");
-            client.println(".slider {position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc;}");
-            client.println(".slider:before {position: absolute; content: ""; height: 46px; width: 46px; left: 4px; bottom: 4px; background-color: white;}");
-            client.println("input:checked + .slider {background-color: #2196F3;}");
-            client.println("input:checked + .slider:before {transform: translateX(46px);}</style>");
-
             //display slider
-            client.println("<label class="switch"> <input type="checkbox"> <span class="slider"></span></label>");
+            client.println("<label class=\"switch\"> <input type=\"checkbox\"> <span class=\"slider\"></span></label>");
 
             client.println("<body><h3>Boat traffic light #2 </h3>");
-            client.println("<label class="switch"> <input type="checkbox"> <span class="slider"></span></label>");
+           client.println("<label class=\"switch\"> <input type=\"checkbox\"> <span class=\"slider\"></span></label>");
 
             client.println("<body><h3>Car traffic light #2 </h3>");
-            client.println("<label class="switch"> <input type="checkbox"> <span class="slider"></span></label>");
+            client.println("<label class=\"switch\"> <input type=\"checkbox\"> <span class=\"slider\"></span></label>");
 
             client.println("<body><h3>Car traffic light #2 </h3>");
-            client.println("<label class="switch"> <input type="checkbox"> <span class="slider"></span></label>");
+            client.println("<label class=\"switch\"> <input type=\"checkbox\"> <span class=\"slider\"></span></label>");
 
             
             // // Display current state, and ON/OFF buttons for GPIO 26  
