@@ -84,13 +84,13 @@ void loop() {
             // Feel free to change the background-color and font-size attributes to fit your preferences
             client.println("<style>html { font-family: Helvetica; display: inline-block; margin: 0px auto; text-align: center;}");
             //client.println(".button { background-color: #4CAF50; border: none; color: white; padding: 16px 40px;");
-            client.println("text-decoration: none; font-size: 30px; margin: 2px; cursor: pointer;}");
+            //client.println("text-decoration: none; font-size: 30px; margin: 2px; cursor: pointer;}");
             //client.println(".button2 {background-color: #555555;}</style></head>");
 
             //slider design
             client.println(".switch {position: relative; display: inline-block; width: 100px; height: 54px;}");
             client.println(".slider {position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc;}");
-            client.println(".slider:before {position: absolute; content: "\"; height: 46px; width: 46px; left: 4px; bottom: 4px; background-color: white;}");
+            client.println(".slider:before {position: absolute; content: \"\"; height: 46px; width: 46px; left: 4px; bottom: 4px; background-color: white;}");
             client.println("input:checked + .slider {background-color: #2196F3;}");
             client.println("input:checked + .slider:before {transform: translateX(46px);}</style></head>");
 
