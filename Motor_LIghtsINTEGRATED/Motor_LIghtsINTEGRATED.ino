@@ -66,7 +66,7 @@ int measureDistance(int trig, int echo, long dur) {
 
 void liftBridge() {
   Serial.println("======Lifting Bridge=======");
-  Serial.println("=======Closing Gate========")
+  Serial.println("=======Closing Gate========");
   for (int i = 90; i >= 0; i--) {
     boomgate1.write(i);
     boomgate2.write(i);
@@ -85,7 +85,7 @@ void liftBridge() {
 
 void lowerBridge() {
   Serial.println("======Lowering Brdige======");
-  Serial.println("=======Opening Gate========")
+  Serial.println("=======Opening Gate========");
     for (int i = 0; i <= 90; i++) {
     boomgate1.write(i);
     boomgate2.write(i);
