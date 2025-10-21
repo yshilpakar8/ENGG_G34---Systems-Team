@@ -7,10 +7,10 @@
 
 // sensor pins
 const int trigPin1 = 13;
-const int echoPin1 = 14;
+const int echoPin1 = 35;
 
 const int trigPin2 = 16;
-const int echoPin2 = 35;
+const int echoPin2 = 34;
 
 // Boat led
 const int redPinBOAT1    = 32;    
