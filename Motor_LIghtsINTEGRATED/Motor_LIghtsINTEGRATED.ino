@@ -1,4 +1,5 @@
-#include <ESP32Servo.h> 
+#include <Arduino.h>
+#include <ESP32Servo.h>
 
 // === Traffic light colors ===
 #define COLOR_RED     1 
@@ -6,11 +7,11 @@
 #define COLOR_GREEN   3
 
 // sensor pins
-const int trigPin1 = 13;
-const int echoPin1 = 35;
+const int trigPin1 = 13;   
+const int echoPin1 = 35;   
 
-const int trigPin2 = 16;
-const int echoPin2 = 34;
+const int trigPin2 = 16;   
+const int echoPin2 = 34;   
 
 // Boat led
 const int redPinBOAT1    = 32;    
@@ -20,10 +21,10 @@ const int greenPinBOAT2  = 27;
 
 
 // Car led 
-const int redPinCAR1 = 25;
-const int greenPinCAR1 = 13;                
-const int redPinCAR2 = 22;
-const int greenPinCAR2 = 21;
+const int redPinCAR1 = 25; 
+const int greenPinCAR1 = 23;                         
+const int redPinCAR2 = 22; 
+const int greenPinCAR2 = 21; 
 
 // Boom Gate Variables
 Servo boomgate1;
@@ -31,9 +32,12 @@ Servo boomgate2;
 
 boolean gateClosed = false;
 
+int pinBoomGate1 = 4;
+int pinBoomGate2 = 15;
+
 // h-bridge pins
-int IN1 = 18;
-int IN2 = 19;
+int IN1 = 12;  
+int IN2 = 14;  
 
 int state; // 1 = up 0 = down
 
@@ -90,13 +94,6 @@ void liftBridge() {
 void lowerBridge() {
   // Serial message indicating bridge is being lowered
   Serial.println("======Lowering Brdige======");
-  // Open road boom gate AFTER lowering bridge
-  Serial.println("=======Opening Gate========");
-  for (int i = 0; i <= 90; i++) {
-    boomgate1.write(i);
-    boomgate2.write(i);
-    delay(20);
-  }
   // Rotates the Motor A counter-clockwise
   digitalWrite(IN1, HIGH);
   digitalWrite(IN2, LOW);
@@ -105,6 +102,13 @@ void lowerBridge() {
   // Stop Motor A
   digitalWrite(IN1, HIGH);
   digitalWrite(IN2, HIGH);
+  // Open road boom gate AFTER lowering bridge
+  Serial.println("=======Opening Gate========");
+  for (int i = 0; i <= 90; i++) {
+    boomgate1.write(i);
+    boomgate2.write(i);
+    delay(20);
+  }
   delay(500);
   // Change state variable to reflect the bridge is lowered
   state = 0;
@@ -182,20 +186,20 @@ void loop() {
   distance2 = measureDistance(trigPin2, echoPin2, duration2);
   
   if(distance1 <= threshold && state == 0) {
-   setBoatSignalLights(COLOR_RED);
-   setCarSignalLights(COLOR_RED);
-   liftBridge();
-   setBoatSignalLights(COLOR_GREEN);
+    setBoatSignalLights(COLOR_RED);
+    setCarSignalLights(COLOR_RED);
+    liftBridge();
+    setBoatSignalLights(COLOR_GREEN);
   } else if(state == 1 && distance1 > threshold && distance2 == threshold){
     setBoatSignalLights(COLOR_RED);
     delay(2000);// Delay lowering to allow ships to stop
     lowerBridge();
     setCarSignalLights(COLOR_GREEN);
   } else if(distance2 <= threshold && state == 0) {
-   setBoatSignalLights(COLOR_RED);
-   setCarSignalLights(COLOR_RED);
-   liftBridge();
-   setBoatSignalLights(COLOR_GREEN);
+    setBoatSignalLights(COLOR_RED);
+    setCarSignalLights(COLOR_RED);
+    liftBridge();
+    setBoatSignalLights(COLOR_GREEN);
   } else if(state == 1 && distance2 > threshold && distance1 == threshold){
     setBoatSignalLights(COLOR_RED);
     delay(2000);
