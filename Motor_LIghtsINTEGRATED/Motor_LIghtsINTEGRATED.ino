@@ -65,28 +65,34 @@ int measureDistance(int trig, int echo, long dur) {
 }
 
 void liftBridge() {
-  Serial.println("======Lifting Bridge=======");
+  // Close road boom gate BEFORE lifting bridge
   Serial.println("=======Closing Gate========");
   for (int i = 90; i >= 0; i--) {
     boomgate1.write(i);
     boomgate2.write(i);
     delay(20);
   }
+  // Serial Message indicating bridge is lifting
+  Serial.println("======Lifting Bridge=======");
   // Rotate the Motor A clockwise
   digitalWrite(IN1, LOW);
   digitalWrite(IN2, HIGH);
-  delay(liftTime);                    // change time to lift until bridge reached topx
+  // Keep motor running until the bridge is fully lifted
+  delay(liftTime);                    
   // Stop Motor A
   digitalWrite(IN1, HIGH);
   digitalWrite(IN2, HIGH);
   delay(500);
+  // Change state variable to reflect the bridge is lifted
   state = 1;
 }
 
 void lowerBridge() {
+  // Serial message indicating bridge is being lowered
   Serial.println("======Lowering Brdige======");
+  // Open road boom gate AFTER lowering bridge
   Serial.println("=======Opening Gate========");
-    for (int i = 0; i <= 90; i++) {
+  for (int i = 0; i <= 90; i++) {
     boomgate1.write(i);
     boomgate2.write(i);
     delay(20);
@@ -94,29 +100,42 @@ void lowerBridge() {
   // Rotates the Motor A counter-clockwise
   digitalWrite(IN1, HIGH);
   digitalWrite(IN2, LOW);
-  delay(liftTime);                    // change time to lift until bridge reached top
+  // Keep motor running until the bridge is fully lowered
+  delay(liftTime);                  
   // Stop Motor A
   digitalWrite(IN1, HIGH);
   digitalWrite(IN2, HIGH);
   delay(500);
+  // Change state variable to reflect the bridge is lowered
   state = 0;
 }
 
 void setBoatSignalLights(int color) {
- digitalWrite(redPinBOAT1, LOW);
- digitalWrite(greenPinBOAT1, LOW);
- digitalWrite(redPinBOAT2, LOW);
- digitalWrite(greenPinBOAT2, LOW);
+  if (color == COLOR_RED) {
+    digitalWrite(redPinBOAT1, HIGH);
+    digitalWrite(redPinBOAT2, HIGH);
+    digitalWrite(greenPinBOAT1, LOW);
+    digitalWrite(greenPinBOAT2, LOW);
+  } else if (color == COLOR_GREEN) {
+    digitalWrite(greenPinBOAT1, HIGH);
+    digitalWrite(greenPinBOAT2, HIGH); // fix: drive green boat LEDs when GREEN
+    digitalWrite(redPinBOAT1, LOW);
+    digitalWrite(redPinBOAT2, LOW);
+  }
+}
 
-
-
- if (color == COLOR_RED) {
-   digitalWrite(redPinBOAT1, HIGH);
-   digitalWrite(redPinBOAT2, HIGH);
- } else if (color == COLOR_GREEN) {
-   digitalWrite(greenPinBOAT1, HIGH);
-   digitalWrite(redPinBOAT2, HIGH);
- }
+void setCarSignalLights(int color) {
+  if (color == COLOR_RED) {
+    digitalWrite(redPinCAR1, HIGH);
+    digitalWrite(redPinCAR2, HIGH);
+    digitalWrite(greenPinCAR1, LOW);
+    digitalWrite(greenPinCAR2, LOW);
+  } else if (color == COLOR_GREEN) {
+    digitalWrite(greenPinCAR1, HIGH);
+    digitalWrite(greenPinCAR2, HIGH); 
+    digitalWrite(redPinCAR1, LOW);
+    digitalWrite(redPinCAR2, LOW);
+  }
 }
 
 
@@ -145,18 +164,17 @@ void setup() {
   pinMode(greenPinCAR2, OUTPUT);
 
 
-  Serial.begin(9600); // Starts the serial communication with BAUD 9600
+  Serial.begin(115200); // Starts the serial communication with BAUD 9600
   state = 0;
-  delay(1000);
+  delay(2000);
 
-  boomgate1.attach(4);
-  boomgate2.attach(15);
+  boomgate1.attach(pinBoomGate1);
+  boomgate2.attach(pinBoomGate2);
 
   //motor is in 90 degree
   boomgate1.write(90); 
   boomgate2.write(90);
-  
-  
+
 }
 
 void loop() {  
@@ -165,29 +183,34 @@ void loop() {
   
   if(distance1 <= threshold && state == 0) {
    setBoatSignalLights(COLOR_RED);
+   setCarSignalLights(COLOR_RED);
    liftBridge();
    setBoatSignalLights(COLOR_GREEN);
   } else if(state == 1 && distance1 > threshold && distance2 == threshold){
     setBoatSignalLights(COLOR_RED);
     delay(2000);// Delay lowering to allow ships to stop
     lowerBridge();
+    setCarSignalLights(COLOR_GREEN);
   } else if(distance2 <= threshold && state == 0) {
    setBoatSignalLights(COLOR_RED);
+   setCarSignalLights(COLOR_RED);
    liftBridge();
    setBoatSignalLights(COLOR_GREEN);
   } else if(state == 1 && distance2 > threshold && distance1 == threshold){
     setBoatSignalLights(COLOR_RED);
     delay(2000);
     lowerBridge();
-    
+    setCarSignalLights(COLOR_GREEN);
   } else if(state == 1) {
     digitalWrite(IN1, LOW);
     digitalWrite(IN2, LOW);
     setBoatSignalLights(COLOR_GREEN);
+    setCarSignalLights(COLOR_RED);
   } else {
     digitalWrite(IN1, LOW);
     digitalWrite(IN2, LOW);
     setBoatSignalLights(COLOR_RED);
+    setCarSignalLights(COLOR_GREEN);
   }
   // Prints the distance on the Serial Monitor
   Serial.print("Distance1: ");
