@@ -6,24 +6,24 @@
 #define COLOR_GREEN   3
 
 // sensor pins
-const int trigPin1 = 10;
-const int echoPin1 = 11;
+const int trigPin1 = 13;
+const int echoPin1 = 14;
 
-const int trigPin2 = 8;
-const int echoPin2 = 9;
+const int trigPin2 = 16;
+const int echoPin2 = 35;
 
 // Boat led
 const int redPinBOAT1    = 32;    
 const int greenPinBOAT1  = 33;    
-const int redPinBOAT2    = 18;    
+const int redPinBOAT2    = 26;    
 const int greenPinBOAT2  = 27;    
 
 
 // Car led 
-const int redPinCAR1 = 12;
+const int redPinCAR1 = 25;
 const int greenPinCAR1 = 13;                
-const int redPinCAR2 = 25;
-const int greenPinCAR2 = 26;
+const int redPinCAR2 = 22;
+const int greenPinCAR2 = 21;
 
 // Boom Gate Variables
 Servo boomgate1;
@@ -32,8 +32,8 @@ Servo boomgate2;
 boolean gateClosed = false;
 
 // h-bridge pins
-int IN1 = 3;
-int IN2 = 2;
+int IN1 = 18;
+int IN2 = 19;
 
 int state; // 1 = up 0 = down
 
@@ -149,8 +149,8 @@ void setup() {
   state = 0;
   delay(1000);
 
-  boomgate1.attach(26);
-  boomgate2.attach(25);
+  boomgate1.attach(4);
+  boomgate2.attach(15);
 
   //motor is in 90 degree
   boomgate1.write(90); 
