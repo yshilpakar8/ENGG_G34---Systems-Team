@@ -252,6 +252,11 @@ void loop () {
             } else if (header.indexOf("GET /carled?state=0") >= 0) {
               setCarSignalLights(COLOR_GREEN);
             }
+            if (header.indexOf("GET /boatled?state=1") >= 0) {
+              setBoatSignalLights(COLOR_RED);
+            } else if (header.indexOf("GET /boatled?state=0") >= 0) {
+              setBoatSignalLights(COLOR_GREEN);
+            }
           }
           
           // if the byte is a newline character
@@ -396,10 +401,14 @@ void loop () {
   Serial.print("Distance2: ");
   Serial.println(distance2);
   Serial.print("State: ");
-  Serial.println(state);
+  (state == 0) ? Serial.println("Lowered"): Serial.println("Lifted");
   Serial.print("Manual Override: ");
-  Serial.println(webState);
-  Serial.print("Boom Gate Closed: ");
-  Serial.println(gateClosed);
+  (webState == 0) ? Serial.println("OFF"): Serial.println("ON");
+  Serial.print("Boom Gate: ");
+  (gateClosed) ? Serial.println("Closed"): Serial.println("Open");
+  Serial.print("Boat traffic lights: ");
+  (boatLedState == 1) ? Serial.println("RED"): Serial.println("GREEN");
+  Serial.print("Car traffic lights: ");
+  (carLedState == 1) ? Serial.println("RED"): Serial.println("GREEN");
   delay(500);
 }
