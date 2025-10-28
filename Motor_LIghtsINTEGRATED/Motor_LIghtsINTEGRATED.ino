@@ -297,14 +297,12 @@ void loop () {
 
             // Subheading
             client.println("<body><h2>Control system</h2>");
+            
             client.println("<body><h3>Boat traffic light </h3>");
-
             client.print("<label class=\"switch\"><input type=\"checkbox\" id=\"boatCheck\" onchange=\"boatFunction()\" ");
             client.println("><span class=\"slider\"></span></label>");
 
             client.println("<body><h3>Car traffic light </h3>");
-            client.println("<label class=\"switch\"> <input type=\"checkbox\"> <span class=\"slider\"></span></label>");
-
             client.print("<label class=\"switch\"><input type=\"checkbox\" id=\"carCheck\" onchange=\"carFunction()\" ");
             client.println("><span class=\"slider\"></span></label>");
 
