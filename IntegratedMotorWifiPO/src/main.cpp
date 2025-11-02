@@ -18,9 +18,8 @@ int webState = 0;
 
 
 // === Traffic light colors ===
-#define COLOR_RED     1 
-#define COLOR_YELLOW  2
-#define COLOR_GREEN   3
+#define COLOR_RED     0 
+#define COLOR_GREEN   1
 
 // sensor pins
 const int trigPin1 = 13;   
@@ -244,6 +243,22 @@ void loop () {
         Serial.write(c);                    // print it out the serial monitor
         header += c;
         if (c == '\n') {  
+          // Serve JSON status for live updates
+          if (header.indexOf("GET /status") >= 0) {
+            client.println("HTTP/1.1 200 OK");
+            client.println("Content-type: application/json");
+            client.println("Cache-Control: no-cache");
+            client.println("Connection: close");
+            client.println();
+            client.print("{\"distance1\":"); client.print(distance1);
+            client.print(",\"distance2\":"); client.print(distance2);
+            client.print(",\"motor\":\""); client.print(state == 0 ? "LOWERED" : "LIFTED"); client.print("\"");
+            client.print(",\"gates\":\""); client.print(gateClosed ? "CLOSED" : "OPENED"); client.print("\"");
+            client.print(",\"boat\":\""); client.print(boatLedState == COLOR_GREEN ? "GREEN" : "RED"); client.print("\"");
+            client.print(",\"car\":\""); client.print(carLedState == COLOR_GREEN ? "GREEN" : "RED"); client.print("\"}");
+            client.println();
+            break;
+          }  
 
 
         if (webState == 1) {
@@ -256,6 +271,18 @@ void loop () {
               setBoatSignalLights(COLOR_RED);
             } else if (header.indexOf("GET /boatled?state=0") >= 0) {
               setBoatSignalLights(COLOR_GREEN);
+            }
+            if (header.indexOf("GET /motor?state=1") >= 0) {
+              if (state == 0) { liftBridge(); }
+              
+            } else if (header.indexOf("GET /motor?state=0") >= 0) {
+              if (state == 1) { lowerBridge(); }
+            }
+            if (header.indexOf("GET /boomGate?state=1") >= 0) {
+              if (gateClosed) { openBoomGate(); }
+              
+            } else if (header.indexOf("GET /boomGate?state=0") >= 0) {
+              if (!gateClosed) { closeBoomGate(); }
             }
           }
           
@@ -292,16 +319,37 @@ void loop () {
             client.println("<label class=\"switch\"><input type=\"checkbox\" id=\"control\" onchange=\"ControlState()\" ");
             client.println("><span class=\"slider\"></span></label>");
                      
-            // divider            
-            client.println("<h4> The Motor is currently </h4><h4> The bridge is currently </h4></hr></section>");
-            client.println("<section><hr><h2> Motor control </h2><label class=\"switch\"><input type=\"checkbox\"><span class=\"slider\"></hr></section>");
-            client.println("");
-            client.println("");
-            client.println("");
+            // divider         
+            client.println("<h4> Distance 1: </h4>");
+            client.println("<h4 id=\"distance1State\">");
 
+            client.println("<h4> Distance 2: </h4>");
+            client.println("<h4 id=\"distance2State\">");
+
+            client.println("<h4> Bridge is currently: </h4>");
+            client.println("<h4 id=\"motorState\">");
+
+            client.println("<h4> Gates are currently: </h4>");
+            client.println("<h4 id=\"gateState\">");
+
+            client.println("<h4> Boat lights are currently: </h4>");
+            client.println("<h4 id=\"boatState\">");
+
+            client.println("<h4> Car lights are currently: </h4>");
+            client.println("<h4 id=\"carState\">");
 
             // Subheading
             client.println("<body><h2>Control system</h2>");
+
+
+
+            client.println("<body><h3>Motor Control </h3>");
+            client.print("<label class=\"switch\"><input type=\"checkbox\" id=\"motorCheck\" onchange=\"motorFunction()\" ");
+            client.println("><span class=\"slider\"></span></label>");
+
+            client.println("<body><h3>Boom Gate Control </h3>");
+            client.print("<label class=\"switch\"><input type=\"checkbox\" id=\"boomGateCheck\" onchange=\"boomGateFunction()\" ");
+            client.println("><span class=\"slider\"></span></label>");
             
             client.println("<body><h3>Boat traffic light </h3>");
             client.print("<label class=\"switch\"><input type=\"checkbox\" id=\"boatCheck\" onchange=\"boatFunction()\" ");
@@ -311,6 +359,10 @@ void loop () {
             client.print("<label class=\"switch\"><input type=\"checkbox\" id=\"carCheck\" onchange=\"carFunction()\" ");
             client.println("><span class=\"slider\"></span></label>");
 
+
+            // JSON Functions
+            
+            // Manual Override
             client.println("<script>function ControlState() { var xhr = new XMLHttpRequest(); ");
             client.println("var controlstate = document.getElementById(\"control\").checked?1:0;") ;
             client.println("xhr.open(\"GET\",\"/control?state=\"+controlstate,true);");
@@ -324,20 +376,54 @@ void loop () {
                 webState = 0;
              }
 
+
+            // Car Traffic
             client.println("<script>function carFunction() { var xhr = new XMLHttpRequest(); ");
             client.println("var carledstate = document.getElementById(\"carCheck\").checked?1:0;") ;
             client.println("xhr.open(\"GET\",\"/carled?state=\"+carledstate,true);");
             client.println("xhr.send();}");
             client.println("</script>");
             client.println("</body></html>");
+            
 
+
+            // Boat Traffic
             client.println("<script>function boatFunction() { var xhr = new XMLHttpRequest(); ");
             client.println("var boatledstate = document.getElementById(\"boatCheck\").checked?1:0;") ;
             client.println("xhr.open(\"GET\",\"/boatled?state=\"+boatledstate,true);");
             client.println("xhr.send();}");
             client.println("</script>");
             client.println("</body></html>");
-           
+
+            // Motor Control
+            client.println("<script>function motorFunction() { var xhr = new XMLHttpRequest(); ");
+            client.println("var motorstate = document.getElementById(\"motorCheck\").checked?1:0;") ;
+            client.println("xhr.open(\"GET\",\"/motor?state=\"+motorstate,true);");
+            client.println("xhr.send();}");
+            client.println("</script>");
+            client.println("</body></html>");
+
+            // Boom Gate
+            client.println("<script>function boomGateFunction() { var xhr = new XMLHttpRequest(); ");
+            client.println("var boomGatestate = document.getElementById(\"boomGateCheck\").checked?1:0;") ;
+            client.println("xhr.open(\"GET\",\"/boomGate?state=\"+boomGatestate,true);");
+            client.println("xhr.send();}");
+            client.println("</script>");
+            client.println("</body></html>");
+            
+            // Live status updater
+            client.println("<script>\nfunction updateStatus(){\n  var xhr=new XMLHttpRequest();\n");  
+            client.print("xhr.open('GET','/status',true);\n  xhr.onreadystatechange=function(){\n");    
+            client.print("if(xhr.readyState==4 && xhr.status==200){\n      try{var s=JSON.parse(xhr.responseText);\n"); 
+            client.print("document.getElementById('distance1State').innerText=s.distance1;\n");   
+            client.print("document.getElementById('distance2State').innerText=s.distance2;\n");      
+            client.print("document.getElementById('motorState').innerText=s.motor;\n");        
+            client.print("document.getElementById('gateState').innerText=s.gates;\n");        
+            client.print("document.getElementById('boatState').innerText=s.boat;\n");      
+            client.print("document.getElementById('carState').innerText=s.car;\n");      
+            client.print("}catch(e){}\n    }\n  };\n  xhr.send();\n}\nsetInterval(updateStatus,500);\n</script>");
+            client.println("</body></html>");
+            
             // The HTTP response ends with another blank line
             client.println();
 
@@ -407,8 +493,8 @@ void loop () {
   Serial.print("Boom Gate: ");
   (gateClosed) ? Serial.println("Closed"): Serial.println("Open");
   Serial.print("Boat traffic lights: ");
-  (boatLedState == 1) ? Serial.println("RED"): Serial.println("GREEN");
+  (boatLedState == COLOR_RED) ? Serial.println("RED"): Serial.println("GREEN");
   Serial.print("Car traffic lights: ");
-  (carLedState == 1) ? Serial.println("RED"): Serial.println("GREEN");
+  (carLedState == COLOR_RED) ? Serial.println("RED"): Serial.println("GREEN");
   delay(500);
 }
