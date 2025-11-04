@@ -43,6 +43,7 @@ const int greenPinCAR2 = 21;
 // LED States
 int carLedState = COLOR_GREEN;
 int boatLedState = COLOR_RED;
+int blink = 1;
 
 // Boom Gate Variables
 Servo boomgate1;
@@ -66,8 +67,9 @@ int distance1 = 20;
 long duration2 = 20;
 int distance2 = 20;
 
-const int threshold = 10;
-const int liftTime = 1700;
+const int threshold = 50;
+const int liftTime = 1400;
+const int lowerTime = 1400; //1500
 
 
 int measureDistance(int trig, int echo, long dur) {
@@ -124,13 +126,14 @@ void liftBridge() {
 }
 
 void lowerBridge() {
+  delay(500);
   // Serial message indicating bridge is being lowered
   Serial.println("======Lowering Brdige======");
   // Rotates the Motor A counter-clockwise
   digitalWrite(IN1, HIGH);
   digitalWrite(IN2, LOW);
   // Keep motor running until the bridge is fully lowered
-  delay(liftTime);                  
+  delay(lowerTime);                  
   // Stop Motor A
   digitalWrite(IN1, HIGH);
   digitalWrite(IN2, HIGH);
@@ -158,6 +161,26 @@ void setBoatSignalLights(int color) {
   }
 }
 
+
+void blinkLights(int led1, int led2) {
+  digitalWrite(greenPinCAR1, LOW);
+  digitalWrite(greenPinCAR2, LOW);
+  digitalWrite(led1, HIGH);
+  digitalWrite(led2, HIGH);
+  delay(250);
+  digitalWrite(led1, LOW);
+  digitalWrite(led2, LOW);
+  delay(250);
+  digitalWrite(led1, HIGH);
+  digitalWrite(led2, HIGH);
+  delay(250);
+  digitalWrite(led1, LOW);
+  digitalWrite(led2, LOW);
+  delay(250);
+  digitalWrite(led1, HIGH);
+  digitalWrite(led2, HIGH);
+}
+
 void setCarSignalLights(int color) {
   if (color == COLOR_RED) {
     carLedState = COLOR_RED;
@@ -165,14 +188,17 @@ void setCarSignalLights(int color) {
     digitalWrite(redPinCAR2, HIGH);
     digitalWrite(greenPinCAR1, LOW);
     digitalWrite(greenPinCAR2, LOW);
+    blink = 0;
   } else if (color == COLOR_GREEN) {
     carLedState = COLOR_GREEN;
     digitalWrite(greenPinCAR1, HIGH);
     digitalWrite(greenPinCAR2, HIGH); 
     digitalWrite(redPinCAR1, LOW);
     digitalWrite(redPinCAR2, LOW);
+    blink = 1;
   }
 }
+
 
 void setup() {
   // Motor Driver Pins
@@ -263,6 +289,9 @@ void loop () {
 
         if (webState == 1) {
             if (header.indexOf("GET /carled?state=1") >= 0) {
+              if(blink == 1 && carLedState != COLOR_GREEN) {
+                blinkLights(redPinCAR1, redPinCAR2);
+              }
               setCarSignalLights(COLOR_RED);
             } else if (header.indexOf("GET /carled?state=0") >= 0) {
               setCarSignalLights(COLOR_GREEN);
@@ -449,6 +478,9 @@ void loop () {
   if(webState == 0) {
     if(distance1 <= threshold && state == 0) {
       setBoatSignalLights(COLOR_RED);
+      if(blink == 1) {
+         blinkLights(redPinCAR1, redPinCAR2);
+       }
       setCarSignalLights(COLOR_RED);
       liftBridge();
       setBoatSignalLights(COLOR_GREEN);
@@ -459,6 +491,9 @@ void loop () {
       setCarSignalLights(COLOR_GREEN);
     } else if(distance2 <= threshold && state == 0) {
       setBoatSignalLights(COLOR_RED);
+      if(blink == 1) {
+        blinkLights(redPinCAR1, redPinCAR2);
+      }
       setCarSignalLights(COLOR_RED);
       liftBridge();
       setBoatSignalLights(COLOR_GREEN);
@@ -471,11 +506,17 @@ void loop () {
       digitalWrite(IN1, LOW);
       digitalWrite(IN2, LOW);
       setBoatSignalLights(COLOR_GREEN);
+      if(blink == 1) {
+        blinkLights(redPinCAR1, redPinCAR2);
+      }
       setCarSignalLights(COLOR_RED);
     } else {
       digitalWrite(IN1, LOW);
       digitalWrite(IN2, LOW);
       setBoatSignalLights(COLOR_RED);
+      if(blink == 1 && carLedState != COLOR_GREEN) {
+        blinkLights(redPinCAR1, redPinCAR2);
+      }
       setCarSignalLights(COLOR_GREEN);
     }
   }
